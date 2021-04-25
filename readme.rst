@@ -2,7 +2,7 @@
 Project From Kicap Karan
 ###################
 
-This is a project for Admin of Barcode Absensi
+This is a project for Admin of Barcode Scanner Absensi
 
 *******************
 Release Information
