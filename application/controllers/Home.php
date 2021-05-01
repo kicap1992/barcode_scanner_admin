@@ -7,106 +7,104 @@ class Home extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('model');
-	}
-	
-	function index()
-	{
-    if ($this->input->post('proses') == 'login') {
-      $data = $this->model->serialize($this->input->post('data'));
-      // print_r($data);
-      // $cek_data = $this->model->custom_query("SELECT * FROM tb_login_admin_staff a join tb_admin b on a.nik_admin = b.nik_admin where a.username = '".$data['username']."' and a.password = '".$data['password']."'")->result();
-      $cek_data = $this->model->tampil_data_where('tb_login_admin_staff',array('username' => $data['username'] , 'password' => $data['password']))->result() ;
-      if (count($cek_data) > 0) {
-        switch ($cek_data[0]->level) {
-          case 'superadmin':
-            
-            $this->session->set_userdata(['level' => $cek_data[0]->level]);
-            $this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode(array("res" => "ok")));
-            break;
+		$this->load->model('m_tabel_ss');
 
-          case 'admin':
-          	$cek_data = $this->model->custom_query("SELECT * FROM tb_login_admin_staff a join tb_admin b on a.nik_admin = b.nik_admin where a.username = '".$data['username']."' and a.password = '".$data['password']."'")->result();
-            
-            $this->session->set_userdata(['nik_admin' => $cek_data[0]->nik_admin , 'level' => $cek_data[0]->level, 'id_pengembang' => $cek_data[0]->id_pengembang]);
-            $this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode(array("res" => "ok", 'level' => $cek_data[0]->level)));
-            break;
-          
-          case 'staff':
-            $cek_data = $this->model->tampil_data_where('tb_staff', ['nik_staff' => $cek_data[0]->nik_staff])->result();
-						$this->session->set_userdata(['nik_staff' => $cek_data[0]->nik_staff , 'level' => 'staff', 'id_pengembang' => $cek_data[0]->id_pengembang]);
-            $this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode(array("res" => "ok", 'level' => 'staff')));
-            break;
-        }
-      }
-      else
-      {
-        $this->output->set_status_header(400)->set_content_type('application/json')->set_output(json_encode(array("res" => "gagal")));
-      }
+		if ($this->session->userdata('level') == 'admin') {
+      // redirect('/home');
     }
     else
     {
-      $this->load->view('home/login');
+      $this->session->unset_userdata(array('nik_admin','nik_staff','level'));
+      redirect('/login');
     }
+	}
+
+	function index(){
+		// print_r('sini home');
+		$main['header'] = 'Halaman Utama Admin';
+		
+		$this->load->view('home/index', $main);
 		
 	}
 
+	function karyawan(){
+		// print_r('sini home');
+		if ($this->input->post('proses') == "table_karyawan") {
+      $list = $this->m_tabel_ss->get_datatables(array('nik_karyawan','nama'),array(null, 'nik_karyawan','nama',null),array('nik_karyawan' => 'desc'),"tb_karyawan",null,null,"*");
+      $data = array();
+      $no = 0;
+      foreach ($list as $field) {
+        
+        $no++;
+        $row = array();
+        $row[] = $no;
+        $row[] = $field->nik_karyawan;
+        $row[] = $field->nama;
+        $row[] = '<center><button type="button" onclick="detail_karyawan('.$field->nik_karyawan.')" class="btn btn-primary btn-circle btn-sm waves-effect waves-light"><i class="ico fa fa-edit"></i></button></center>';
+        $data[] = $row;
+      }
 
-	// function login()
-	// {
-		// $request = $this->input->server('REQUEST_METHOD');
+      $output = array(
+        "draw" => $_POST['draw'],
+        "recordsTotal" => $this->m_tabel_ss->count_all("tb_karyawan",null,null,"*"),
+        "recordsFiltered" => $this->m_tabel_ss->count_filtered(array('nik_karyawan','nama'),array(null, 'nik_karyawan','nama',null),array('nik_karyawan' => 'desc'),"tb_karyawan",null,null,"*"),
+        "data" => $data,
+      );
+      //output dalam format JSON
+      echo json_encode($output);
+    }
 
-		// if ($request == "POST") {
-		// 	if ($this->input->post("proses") == "login") {
-		// 		$data = $this->model->serialize($this->input->post('data'));		
-		// 		$result = $this->model->tampil_data_where('tb_user',$data)->result();
-		// 		if (count($result) > 0) {
-		// 			$this->session->set_userdata('login', array("level" => "admin" , "nik" => $result[0]->nik));
-		// 			// print_r("data ada");
-		// 			$this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode(array("res" => "ok")));
-		// 		}else{
-		// 			$this->output->set_status_header(400)->set_content_type('application/json')->set_output(json_encode(array("res" => "gagal")));
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		$this->output->set_status_header(502)->set_content_type('application/json')->set_output(json_encode(array("res" => "gagal")));
-		// 	}
-				
-		// }	
-		// elseif ($request == "GET") {
-		// 	print_r($this->input->get("nik"));
-		// 	$username = $this->input->post('username');
-		// 	print_r($this->input->post("nik"));
-		// }
-		// elseif ($request == "PUT") {
-		// 	// $nik = $_POST['nik'];
-		// 	$username = $this->input->post('nik');
-		// 	$password = $this->input->post('password');
-		// 	print_r($username);
-		// }
-		// else
-		// {
-		// 	$this->load->view('home/login');
-		// }
+		else{
+			$main['header'] = 'Halaman Karyawan';
+			
+			$this->load->view('home/menu/karyawan', $main);
+		}
 
-	// 	$this->load->view('home/login');
-    
-	// }
+		
+		
+	}
 
-
-  // function daftar(){
-  //   $request = $this->input->server('REQUEST_METHOD');
-  //   if ($request == "POST") {
-  //     $this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode(array("res" => "ok")));        
-  //   } 
-  //   else
-  //   {
-  //     // redirect('/home');
-  //     print_r("sini kawasan larangan");
-  //   }
-  // }
+	function laporan(){
+		// print_r('sini home');
+		$main['header'] = 'Halaman Laporan Absensi';
+		
+		$this->load->view('home/index', $main);
+		
+	}
 	
+	
+	function logout()
+  {
+    // $this->session->unset_userdata('penyuluh');
+    $this->session->unset_userdata(array('nik_staff','nik_staff','level'));
+    // $this->session->set_flashdata('success', '<b>Anda Berhasil Logout</b><br>Terima Kasih Telah Menggunakan Sistem Ini');
+    redirect('/login');
+  }
 
+
+  function try2(){
+    $cek_absensi = $this->model->tampil_data_where('tb_absensi',['bulan' => 4,'tahun' => 2021])->result();
+    $array_absensi = json_decode($cek_absensi[0]->detail,true);
+    foreach ($array_absensi as $key => $value) {
+      if($value['tanggal'] == 29){
+        foreach ($value['absensi'] as $key1 => $value1) {
+          if($value1['nik_karyawan'] == 56465456465465 ){
+            if ($value1['jam_keluar'] == '-') {
+              $array_absensi[$key]['absensi'][$key1] = array(
+                'nik_karyawan' => 56465456465465 ,
+                'jam_masuk' => "21:32:50",
+                'jam_keluar' => "23:32:50",
+              );
+            }
+          }
+        }
+      }
+
+      
+    }
+    print_r($array_absensi);
+  }
+	
 
 
 	

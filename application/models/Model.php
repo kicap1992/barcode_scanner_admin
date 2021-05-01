@@ -22,6 +22,15 @@ class Model extends CI_Model {
     return $query;
   }
 
+  function tampil_data_keseluruhan_as($namatabel,$as) //gunakan ini untuk menampilkan tabel yg lebih spesifik 'where'
+  {
+    $this->db->select($as);
+    $this->db->from($namatabel);
+    
+    $query = $this->db->get();
+    return $query;
+  }
+
   function tampil_data_where($namatabel,$array) //gunakan ini untuk menampilkan tabel yg lebih spesifik 'where'
   {
     $this->db->select("*");
