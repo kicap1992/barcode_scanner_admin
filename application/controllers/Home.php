@@ -64,11 +64,53 @@ class Home extends CI_Controller {
 		
 	}
 
-	function laporan(){
-		// print_r('sini home');
-		$main['header'] = 'Halaman Laporan Absensi';
-		
-		$this->load->view('home/index', $main);
+
+
+	function laporan($tahun = null, $bulan = null){
+		if ($this->input->post('proses') == "table_all") {
+      $list = $this->m_tabel_ss->get_datatables(array('bulan','tahun'),array('tahun','bulan',null),array('id_absensi' => 'desc'),"tb_absensi",null,null,"*");
+      $data = array();
+      $no = 0;
+      foreach ($list as $field) {
+      
+        $no++;
+        $row = array();
+        $row[] = $this->model->bulan($field->bulan);
+        $row[] = $field->tahun;
+        $row[] = '<center><a href="'.base_url().'home/laporan/'.$field->tahun.'/'.$field->bulan.'"><button type="button" class="btn btn-primary btn-circle btn-sm waves-effect waves-light"><i class="ico fa fa-edit"></i></button></a></center>';
+        $data[] = $row;
+      }
+
+      $output = array(
+        "draw" => $_POST['draw'],
+        "recordsTotal" => $this->m_tabel_ss->count_all("tb_absensi",null,null,"*"),
+        "recordsFiltered" => $this->m_tabel_ss->count_filtered(array('bulan','tahun'),array('tahun','bulan',null),array('id_absensi' => 'desc'),"tb_absensi",null,null,"*"),
+        "data" => $data,
+      );
+      //output dalam format JSON
+      echo json_encode($output);
+    }
+
+    else if ($tahun != null) {
+      if (is_numeric($tahun) and is_numeric($bulan)) {
+        $cek_data = $this->model->tampil_data_where('tb_absensi',['tahun' => $tahun,'bulan' => $bulan])->result();
+
+        if (count($cek_data) > 0) {
+          
+        }else{
+          redirect('/home/laporan');
+        }
+
+      }else{
+        redirect('/home/laporan');
+      }
+    }
+
+		else{
+      $main['header'] = 'Halaman Laporan Absensi';
+      
+      $this->load->view('home/menu/laporan', $main);
+    }
 		
 	}
 	

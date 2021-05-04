@@ -24,6 +24,9 @@
         <li <?php if ($this->uri->segment(2) == "karyawan"): ?>class="current"<?php endif ?>>
           <a class="waves-effect" href="<?=base_url()?>home/karyawan"><i class="menu-icon fa fa-users"></i><span>Halaman Karyawan</span></a>
         </li>
+        <li <?php if ($this->uri->segment(2) == "libur"): ?>class="current"<?php endif ?>>
+          <a class="waves-effect" href="<?=base_url()?>home/libur"><i class="menu-icon fa fa-calendar-minus-o"></i><span>Pengaturan Libur</span></a>
+        </li>
         <li <?php if ($this->uri->segment(2) == "laporan"): ?>class="current"<?php endif ?>>
           <a class="waves-effect" href="<?=base_url()?>home/laporan"><i class="menu-icon zmdi zmdi-storage"></i><span>Laporan Absensi</span></a>
         </li>

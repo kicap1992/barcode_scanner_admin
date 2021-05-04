@@ -65,6 +65,46 @@ class Api_server extends RestController
     
   }
 
+  function karyawan_get(){
+    $nik_karyawan = $this->get('nik_karyawan');
+    $cek_data = $this->model->tampil_data_where('tb_karyawan' ,['nik_karyawan' => $nik_karyawan])->result();
+    
+    if(count($cek_data) > 0){
+      $this->response(['message' => 'sini ada','data' => $cek_data], 200);
+    }else{
+      $this->response(['message' => 'tiada data'], 401);
+    }
+    
+  }
+
+  function karyawan_put(){
+    $where = $this->put('where');
+    $data = $this->put('data');
+    $cek_data = $this->model->tampil_data_where('tb_karyawan' ,$where)->result();
+    
+    if(count($cek_data) > 0){
+      $this->model->update('tb_karyawan',$where,$data);
+      $this->response(['message' => 'ok'], 200);
+    }else{
+      $this->response(['message' => 'tiada data'], 401);
+    }
+    
+  }
+
+  function karyawan_delete(){
+    $where = $this->delete('where');
+    // $data = $this->put('data');
+    $cek_data = $this->model->tampil_data_where('tb_karyawan' ,$where)->result();
+    
+    if(count($cek_data) > 0){
+      $this->model->delete('tb_karyawan',$where);
+      $this->response(['message' => 'ok',$where], 200);
+    }else{
+      $this->response(['message' => 'tiada data'], 401);
+    }
+    
+  }
+
   function login_petugas_get(){
     $username = $this->get('username');
     $password = $this->get('password');
