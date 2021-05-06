@@ -280,7 +280,7 @@
         
     }
 
-    function detail_karyawan(nik_karyawan){
+    function detail_karyawan(nik_karyawan,nama){
       // console.log(nik_karyawan)
       $.ajax({
         url: url+"api_server/karyawan",

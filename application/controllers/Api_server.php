@@ -105,6 +105,54 @@ class Api_server extends RestController
     
   }
 
+  function libur_put(){
+    $where = $this->put('where');
+    $detail = $this->put('detail');
+
+    $cek_data = $this->model->tampil_data_where('tb_karyawan',$where)->result();
+    $detail_libur = $cek_data[0]->detail;
+
+    if ($detail_libur == null) {
+      $this->model->update('tb_karyawan',$where,$detail);
+      $this->response(['message' => 'ok'], 200);
+    }else{
+      $detail_libur = json_decode($detail_libur,true);
+      $array_libur = json_decode($detail['detail'],true);
+      $ada_tanggal_sama = false;
+      $tanggal_sama = null;
+
+      foreach ($detail_libur as $key => $value) {
+        $ko = false;
+        foreach ($array_libur as $key1 => $value1) {
+          if($value['tanggal'] == $value1['tanggal']){
+            $tanggal_sama =$value1['tanggal'];
+            $ko = true;
+            break;
+          }
+        }
+
+        if ($ko == true) {
+          $ada_tanggal_sama = true;
+          break;
+        }
+      }
+
+      if ($ada_tanggal_sama == false) {
+        $detail_libur = array_merge($detail_libur,$array_libur);
+        $this->model->update('tb_karyawan',$where,['detail' => json_encode($detail_libur)]);
+        $this->response(['message' => $detail_libur], 200);
+      }else{
+        $this->response(['message' => 'Libur pada tanggal '.$tanggal_sama.' telah diatur sebelumnya <br>Sila periksa log libur dibawah untuk info lebih lanjut'], 400);
+      }
+
+      
+    }
+    
+
+    
+  }
+
+
   function login_petugas_get(){
     $username = $this->get('username');
     $password = $this->get('password');
@@ -118,6 +166,7 @@ class Api_server extends RestController
     }
     
   }
+  
 
   function cek_karyawan_by_qrcode_get(){
     $nik = $this->get('nik');

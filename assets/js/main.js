@@ -30,6 +30,22 @@ function get_time(stat){
   }
 }
 
+function get_tomorrow(stat){
+  let today = new Date((new Date()).valueOf() + 86400000)
+  let dd = String(today.getDate()).padStart(2, '0');
+  let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  let yyyy = today.getFullYear();
+  let h = addZero(today.getHours());
+  let m = addZero(today.getMinutes());
+  let s = addZero(today.getSeconds());
+
+  if (stat == 'hari') {
+    return yyyy+'-'+mm+'-'+dd;
+  }else if(stat == 'all') {
+    return yyyy+'-'+mm+'-'+dd+' '+h + ":" + m + ":" + s;
+  }
+}
+
 function toastnya(mesej){
   toastr.options = {
     "closeButton": true,
