@@ -51,6 +51,8 @@
               </thead> -->
               
             </table>
+            <hr>
+            <center><button type="button" class="btn btn-primary btn-sm waves-effect waves-light" onclick="cetak_laporan()">Cetak Laporan</button></center>
           </div>
           <!-- /.card-content -->
         </div>
@@ -150,11 +152,13 @@
 
       let html = await  `<div class="row small-spacing">
             <div class="col-lg-12 col-xs-12" style="overflow-x: auto; ">
-              <table id="table_absensi_detail" class="table table-striped table-bordered display" style="width:100%"></table
+              <table id="table_absensi_detail" class="table table-striped table-bordered display" style="width:100%"></table>
             </div>
           </div>`
 
       await $("#sini_modalnya .modal-body").html(html)
+
+      
 
       $('#table_absensi_detail').DataTable({
         responsive: true,
@@ -223,8 +227,29 @@
         ]
       });
 
+      // let footer = await `<button type="button" class="btn btn-info btn-xs" id="button_edit_data" onclick="cetak(1)">Edit Data ? </button> <button type="button" onclick="hapus_karyawan(${data_karyawan.nik_karyawan},'${data_karyawan.nama}')" class="btn btn-danger btn-xs">Hapus Karyawan</button>`
+      // await $("#sini_modalnya .modal-footer").html(footer)
+
       await $.unblockUI()
 
+      await $('#sini_modalnya').modal('show');
+    }
+
+    async function cetak_laporan(){
+      await block_ui(); 
+      await $("#sini_modalnya .modal-header .modal-title").html(`Laporan Bulan ${$("#val_bulan").val()} , Tahun ${$("#val_tahun").val()}`)
+      await $("#sini_modalnya .modal-dialog").attr('class','modal-dialog modal-lg')
+
+      console.log(``)
+      let html = await  `<div class="row small-spacing">
+            <div class="col-lg-12 col-xs-12" style="overflow-x: auto; ">
+              <iframe src="${url}home/cetak/${$("#val_tahun").val()}/${$("#val_bulan").val()}" title="W3Schools Free Online Web Tutorials" width="100%" height="600px"></iframe>
+            </div>
+          </div>`
+
+      await $("#sini_modalnya .modal-body").html(html)
+
+      await $.unblockUI()
       await $('#sini_modalnya').modal('show');
     }
   </script>

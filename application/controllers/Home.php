@@ -8,6 +8,7 @@ class Home extends CI_Controller {
 		parent::__construct();
 		$this->load->model('model');
 		$this->load->model('m_tabel_ss');
+    $this->load->library('pdf');
 
 		if ($this->session->userdata('level') == 'admin') {
       // redirect('/home');
@@ -273,6 +274,145 @@ class Home extends CI_Controller {
 		
 	}
 	
+
+  function cetak($tahun = null, $bulan = null){
+    if (is_numeric($bulan) && is_numeric($tahun)) {
+      $cek_data = $this->model->tampil_data_where('tb_absensi',['bulan' => $bulan, 'tahun' => $tahun])->result();
+      // print_r($b)
+
+      if (count($cek_data) > 0) {
+        
+        $pdf = new TCPDF('p', 'mm', 'LEGAL', false, 'UTF-8', false);
+        $pdf->setPrintHeader(false);
+        $pdf->AddPage();
+        // setting jenis font yang akan digunakan
+        // $pdf->SetFont('Arial','I',16);
+
+        $html = '
+          <style>
+            
+            .ini {
+              border-bottom: 1px dotted black;
+            }
+
+            .ada  {
+              border-left: 1px solid black;border-bottom: 1px solid black;border-right: 1px solid black;border-top: 1px solid black;
+            }
+
+            .tiada {
+              border-left: 1px solid black;border-right: 1px solid black;border-top: 1px solid black;
+            }
+
+            .tiada1 {
+              border-left: 1px solid black;border-right: 1px solid black;
+            }
+      
+          </style>
+          <table width="100%" style="font-size: 12px;">         
+            <tr>
+              <td width="15%"></td>
+              <td width="70%" align="center" style="font-size: 13px;font-weight:bold" class="ini">LAPORAN ABSENSI TAHUN '.$tahun.' , BULAN '.strtoupper($this->model->bulan($bulan)).'</td>
+              <td width="15%"></td>
+            </tr>         
+          </table>
+          <div></div>
+          
+          
+        ';
+
+        $array_absensi = json_decode($cek_data[0]->detail, true);
+
+        $cek_karyawan = $this->model->tampil_data_keseluruhan('tb_karyawan')->result_array();
+
+        foreach ($array_absensi as $key => $value) {
+          $html .= '<table width="100%" style="font-size: 11px;">         
+              <tr>
+                <td width="35%" align="left" style="font-weight:bold" class="ini">Absensi Tanggal '.$value['tanggal']. ', Hari '.$this->model->hari(date('l', strtotime($tahun.'-'.$bulan.'-'.$value['tanggal']))).'</td>
+                <td width="65%"></td>
+              </tr>         
+            </table>
+            
+            <table width="100%" border="1" style="font-size: 11px;">         
+              <tr style="font-weight:bold">
+                <td>NIK </td>
+                <td>Nama </td>
+                <td>Jam Masuk </td>
+                <td>Jam Keluar </td>
+              </tr>
+            
+           
+          ';
+
+          $ket_detail = $value['absensi'];
+          foreach ($cek_karyawan as $key2 => $value2) {
+            $hadir = false;
+            $jam_masuk = 'Tidak Masuk Kerja';
+            $jam_keluar = 'Tidak Masuk Kerja';
+            foreach ($ket_detail as $key1 => $value1) {
+              if ($value2['nik_karyawan'] == $value1['nik_karyawan']) {
+                $jam_masuk = $value1['jam_masuk'];
+                $jam_keluar = $value1['jam_keluar'];
+                $hadir = true;
+                break;
+              }
+            }
+  
+                 
+            if($hadir != true){
+              $cek_libur = ($value2['detail'] != null) ? json_decode($value2['detail'],true) : $value2['detail'] ;
+  
+              if ($cek_libur != null) {
+                foreach ($cek_libur as $key1 => $value1) {
+                  if ($value1['tanggal'] == $this->input->post('tahun').'-'.$this->input->post('bulan').'-'.$this->input->post('tanggal')) {
+                    $jam_masuk = 'Ambil Cuti';
+                    $jam_keluar = 'Ket : '.$value1['ket'];
+                    break;
+                  }
+                }
+              }
+  
+              elseif ($value2['tanggal_daftar'] > $this->input->post('tahun').'-'.$this->input->post('bulan').'-'.$this->input->post('tanggal')) {
+                $jam_masuk = 'Belum Masuk Kerja';
+                $jam_keluar = 'Belum Masuk Kerja';
+              }
+  
+            }
+  
+            
+            $html .= '<tr>
+                  <td>'.$value2['nik_karyawan'].'</td>
+                  <td>'.$value2['nama'].'</td>
+                  <td>'.$jam_masuk.'</td>
+                  <td>'.$jam_keluar.'</td>
+                </tr>
+              ';
+          }
+
+          
+
+          $html.=' </table><div></div>';
+        }
+
+        // print_r($array_absensi);
+
+        // $pdf->SetLineWidth(0.2);
+        // $pdf->Rect(127,232,23,6);
+        
+        
+
+        // $pdf->WriteHTML($html, true, 0, true, 0);
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        $pdf->Output();
+
+      }else{
+        redirect('/home/laporan');
+      }
+      // print_r('jalankan');
+    }else{
+      redirect('/home/laporan');
+    }
+  }
 	
 	function logout()
   {
