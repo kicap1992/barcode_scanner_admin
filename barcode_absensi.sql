@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 06, 2021 at 07:32 PM
+-- Generation Time: May 21, 2021 at 03:53 PM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 7.4.15
 
@@ -70,7 +70,8 @@ CREATE TABLE `tb_karyawan` (
 INSERT INTO `tb_karyawan` (`nik_karyawan`, `nama`, `tempat_lahir`, `tanggal_lahir`, `jk`, `agama`, `status`, `pendidikan`, `alamat`, `jabatan`, `tanggal_daftar`, `detail`) VALUES
 ('45454545545454', 'Kicap Karan 1', '', '0000-00-00', '', '', '', '', '', '', '2021-04-06', '[{\"tanggal\":\"2021-05-07\",\"ket\":\"asdasdasd\"},{\"tanggal\":\"2021-05-08\",\"ket\":\"asdasdasd\"}]'),
 ('56465456465465', 'asdasdas', 'asdasd', '1992-08-30', 'Laki-laki', 'Kristen Protestan', 'Belum Menikah', 'S1', 'asdasd', 'asdasd', '2021-04-06', NULL),
-('65656566666665', 'Percobaan2', 'asdasdsads1', '1992-08-30', 'Laki-laki', 'Kristen Protestan', 'Belum Menikah', 'S1', 'Tawau', 'asdasdasds1', '2021-05-08', NULL);
+('65656566666665', 'Percobaan2', 'asdasdsads1', '1992-08-30', 'Laki-laki', 'Kristen Protestan', 'Belum Menikah', 'S1', 'Tawau', 'asdasdasds1', '2021-05-08', NULL),
+('87484654848486', 'asdasdsadas1', 'asdasdsads1', '1992-08-30', 'Perempuan', 'Kristen Protestan', 'Belum Menikah', 'D3', 'asdasd', 'asdasdasds1', '2021-05-19', '[{\"tanggal\":\"2021-05-19\",\"ket\":\"asdasdad\"}]');
 
 -- --------------------------------------------------------
 
@@ -92,12 +93,24 @@ CREATE TABLE `tb_login` (
 
 INSERT INTO `tb_login` (`id_login`, `username`, `password`, `nik_karyawan`, `level`) VALUES
 (1, 'admin absensi', '584c60ea9b41500d26f446a2543d8a98', NULL, 'admin'),
-(2, '56465465456465', 'd41d8cd98f00b204e9800998ecf8427e', NULL, ''),
-(3, '56465456465465', '176fd7322b6beaf7afdda3b88ee76b9b', NULL, ''),
-(4, 'admin petugas', '77c10df6c2867dddbe812c3c950b0a73', NULL, 'petugas'),
-(5, '23213123123123', '38f93121eee2c37c5aaf7902ecad0843', NULL, ''),
-(6, '78787878787878', '81bdbd39af125a6bfb21282c810ecb86', NULL, ''),
-(7, '65656566666665', '4a29f705441a615ef353fcae6cf781e1', NULL, '');
+(4, 'admin petugas', '77c10df6c2867dddbe812c3c950b0a73', NULL, 'petugas');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tb_notifikasi`
+--
+
+CREATE TABLE `tb_notifikasi` (
+  `no_telpon` varchar(13) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tb_notifikasi`
+--
+
+INSERT INTO `tb_notifikasi` (`no_telpon`) VALUES
+('2342342342343');
 
 --
 -- Indexes for dumped tables
@@ -123,6 +136,12 @@ ALTER TABLE `tb_login`
   ADD KEY `nik_karyawan` (`nik_karyawan`);
 
 --
+-- Indexes for table `tb_notifikasi`
+--
+ALTER TABLE `tb_notifikasi`
+  ADD PRIMARY KEY (`no_telpon`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -136,7 +155,7 @@ ALTER TABLE `tb_absensi`
 -- AUTO_INCREMENT for table `tb_login`
 --
 ALTER TABLE `tb_login`
-  MODIFY `id_login` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_login` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables

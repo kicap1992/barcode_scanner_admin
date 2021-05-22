@@ -51,8 +51,8 @@
               </thead> -->
               
             </table>
-            <hr>
-            <center><button type="button" class="btn btn-primary btn-sm waves-effect waves-light" onclick="cetak_laporan()">Cetak Laporan</button></center>
+            <!-- <hr>
+            <center><button type="button" class="btn btn-primary btn-sm waves-effect waves-light" onclick="cetak_laporan()">Cetak Laporan</button></center> -->
           </div>
           <!-- /.card-content -->
         </div>
@@ -240,7 +240,7 @@
       await $("#sini_modalnya .modal-header .modal-title").html(`Laporan Bulan ${$("#val_bulan").val()} , Tahun ${$("#val_tahun").val()}`)
       await $("#sini_modalnya .modal-dialog").attr('class','modal-dialog modal-lg')
 
-      console.log(``)
+      // console.log(``)
       let html = await  `<div class="row small-spacing">
             <div class="col-lg-12 col-xs-12" style="overflow-x: auto; ">
               <iframe src="${url}home/cetak/${$("#val_tahun").val()}/${$("#val_bulan").val()}" title="W3Schools Free Online Web Tutorials" width="100%" height="600px"></iframe>

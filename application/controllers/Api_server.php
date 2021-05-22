@@ -1,9 +1,9 @@
 <?php
-// header('Access-Control-Allow-Origin: *');
-// header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT');
-// header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
-// header('Access-Control-Allow-Credentials: true');
-// header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT');
+header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -58,8 +58,9 @@ class Api_server extends RestController
     if(count($cek_data) > 0){
       $this->response(['message' => 'NIK <i>'.$data['nik_karyawan'].'</i> telah terdaftar dalam sistem sebelumnya'], 400);
     }else{
+      $this->model->qrcode_karyawan($data['nik_karyawan']);
       $this->model->insert('tb_karyawan',$data);
-      $this->model->insert('tb_login',['username' => $data['nik_karyawan'],'password' => md5($data['nik_karyawan'])]);
+      // $this->model->insert('tb_login',['username' => $data['nik_karyawan'],'password' => md5($data['nik_karyawan']),'nik_karyawan' => $data['nik_karyawan']]);
       $this->response(['message' => 'ok'], 200);
     }
     
@@ -175,6 +176,19 @@ class Api_server extends RestController
     if (count($cek_data) > 0) {      
       $cek_absensi = $this->model->tampil_data_where('tb_absensi',['bulan' => date('m'),'tahun' => date('Y')])->result();
       if(count($cek_absensi) > 0){
+        $array_libur = ($cek_data[0]->detail != null) ? json_decode($cek_data[0]->detail,true) : null;
+        $libur = false;
+        $ket_libur = null;
+        if ($array_libur != null){
+            foreach ($array_libur as $key => $value) {
+              if ($value['tanggal'] == date('Y-m-d')) {
+                $libur = true;
+                $ket_libur = $value['ket'];
+                break;
+              }
+            }
+        }
+            
         $array_absensi = json_decode($cek_absensi[0]->detail,true);
         $tanggal_ada = false;
         $nik_ada = false;
@@ -199,7 +213,11 @@ class Api_server extends RestController
           
         }
 
-        if ($jam_keluar == true){
+        if ($libur == true) {
+          $this->response(['message' => $cek_data[0]->nama.' libur karena '. $ket_libur], 401);
+        }
+
+        elseif ($jam_keluar == true){
           $this->response(['message' => $cek_data[0]->nama.' telah diabsensi masuk kerja dan pulang kerja pada hari ini'], 401);
         }
         elseif ($nik_ada == true) {
@@ -301,6 +319,21 @@ class Api_server extends RestController
     $cek_data = $this->model->tampil_data_keseluruhan_as('tb_karyawan','nik_karyawan,nama')->result();
     $this->response($cek_data, 200);
   }
+
+  function notifikasi_post(){
+    $no_telpon = $this->post('no_telpon');
+    
+    $cek_data = $this->model->tampil_data_keseluruhan('tb_notifikasi')->result();
+
+    if (count($cek_data) == 0) {
+      $this->model->insert('tb_notifikasi',['no_telpon' => $no_telpon]);
+    }else{
+      $this->model->custom_query('UPDATE tb_notifikasi set no_telpon = '.$no_telpon);
+    }
+
+    $this->response(['message' => $no_telpon], 200);
+  }
+
 
 }
 

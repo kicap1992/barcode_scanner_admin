@@ -281,30 +281,30 @@ class Model extends CI_Model {
     return $ini;
   }
 
-  // function qrcode_buku($kode){
-  //   include "phpqrcode/qrlib.php"; 
-  //   $kode = $kode;
+  function qrcode_karyawan($karyawan){
+    include "phpqrcode/qrlib.php"; 
     
-  //   // $PNG_TEMP_DIR = 'images/'.$kategori;
     
-  //   $PNG_WEB_DIR = 'images/buku/';
+    // $PNG_TEMP_DIR = 'images/'.$kategori;
+    
+    $PNG_WEB_DIR = 'images/karyawan/';
 
-  //   if (!file_exists($PNG_WEB_DIR))
-  //     mkdir($PNG_WEB_DIR);
+    if (!file_exists($PNG_WEB_DIR))
+      mkdir($PNG_WEB_DIR);
         
-  //   $errorCorrectionLevel = 'H';
+    $errorCorrectionLevel = 'H';
 
-  //   $matrixPointSize = 10;
+    $matrixPointSize = 10;
 
-  //   $filename =$PNG_WEB_DIR.md5($kode).'.png';
-  //   QRcode::png($kode, $filename, $errorCorrectionLevel, $matrixPointSize, 2); 
+    $filename =$PNG_WEB_DIR.$karyawan.'.png';
+    QRcode::png($karyawan, $filename, $errorCorrectionLevel, $matrixPointSize, 2); 
 
-  //   if (file_exists($PNG_WEB_DIR.md5($kode).'.png') > 0) {
-  //     return "ada";
-  //   }else{
-  //     return "tiada";
-  //   }
-  // }
+    if (file_exists($PNG_WEB_DIR.$karyawan.'.png') > 0) {
+      return "ada";
+    }else{
+      return "tiada";
+    }
+  }
 
   function cek_last_ai($tables){
 		return $this->db->query("SELECT `AUTO_INCREMENT` as no

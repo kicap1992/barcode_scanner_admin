@@ -4,8 +4,8 @@
     <button type="button" class="button-close fa fa-times js__menu_close"></button>
     <div class="user">
       <a href="#" class="avatar"><img src="<?=base_url()?>/assets/images/admin.png" alt=""><span class="status online"></span></a>
-      <h5 class="name"></h5>
-      <h5 class="position"></h5>
+      <h5 class="name">Admin</h5>
+      <h5 class="position">Admin</h5>
       <!-- /.name -->
      
     </div>
@@ -29,6 +29,9 @@
         </li>
         <li <?php if ($this->uri->segment(2) == "laporan"): ?>class="current"<?php endif ?>>
           <a class="waves-effect" href="<?=base_url()?>home/laporan"><i class="menu-icon zmdi zmdi-storage"></i><span>Laporan Absensi</span></a>
+        </li>
+        <li <?php if ($this->uri->segment(2) == "notifikasi"): ?>class="current"<?php endif ?>>
+          <a class="waves-effect" href="<?=base_url()?>home/notifikasi"><i class="menu-icon fa fa-phone"></i><span>No Telpon Notifikasi</span></a>
         </li>
         
       </ul>

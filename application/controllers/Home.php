@@ -41,7 +41,7 @@ class Home extends CI_Controller {
         $row[] = $no;
         $row[] = $field->nik_karyawan;
         $row[] = $field->nama;
-        $row[] = '<center><button type="button" onclick="detail_karyawan('.$field->nik_karyawan.','."'".$field->nama."'".')" class="btn btn-primary btn-circle btn-sm waves-effect waves-light"><i class="ico fa fa-edit"></i></button></center>';
+        $row[] = '<center><button type="button" onclick="detail_karyawan('.$field->nik_karyawan.','."'".$field->nama."'".')" class="btn btn-primary btn-circle btn-sm waves-effect waves-light"><i class="ico fa fa-edit"></i></button> <button type="button" onclick="qrcode_karyawan('.$field->nik_karyawan.')" class="btn btn-info btn-circle btn-sm waves-effect waves-light"><i class="ico fa fa-qrcode"></i></button></center>';
         $data[] = $row;
       }
 
@@ -274,6 +274,18 @@ class Home extends CI_Controller {
 		
 	}
 	
+  function notifikasi(){
+    $cek_data = $this->model->tampil_data_keseluruhan('tb_notifikasi')->result();
+
+    if (count($cek_data) > 0) {
+      $main['no_telpon'] = $cek_data[0]->no_telpon;
+    }else{
+      $main['no_telpon'] = '';
+    }
+
+    $main['header'] = 'Halaman No Notifikasi';
+    $this->load->view('home/menu/notifikasi', $main);
+  }
 
   function cetak($tahun = null, $bulan = null){
     if (is_numeric($bulan) && is_numeric($tahun)) {
@@ -413,6 +425,61 @@ class Home extends CI_Controller {
       redirect('/home/laporan');
     }
   }
+
+  function print_id_karyawan($nik_karyawan = null)
+	{
+		// print_r($this->uri->segment(3));
+
+    if ($nik_karyawan != null) {
+      $cek_data = $this->model->tampil_data_where('tb_karyawan',array('nik_karyawan' => $nik_karyawan))->result();
+      if (count($cek_data) > 0) {
+        $this->model->qrcode_karyawan($nik_karyawan);
+        $pdf = new TCPDF('P','mm',array(80,60));
+        $pdf->setPrintHeader(false);
+        $pdf->AddPage();
+        // $pdf->Image(base_url('images/karyawan/'.$nik_karyawan.'.png'),5,7,30);
+
+        $html = '
+          <style>
+            
+            .ini {
+              border-bottom: 1px dotted black;
+            }
+
+            .ada  {
+              border-left: 1px solid black;border-bottom: 1px solid black;border-right: 1px solid black;border-top: 1px solid black;
+            }
+
+            .tiada {
+              border-left: 1px solid black;border-right: 1px solid black;border-top: 1px solid black;
+            }
+
+            .tiada1 {
+              border-left: 1px solid black;border-right: 1px solid black;
+            }
+      
+          </style>
+          <table width="100%" style="font-size: 10px;">         
+            <tr>
+              <td width="15%"></td>
+              <td width="70%" align="center"><img src="'.base_url().'images/karyawan/'.$nik_karyawan.'.png" ></td>
+              <td width="15%"></td>
+            </tr> 
+            <tr>
+              <td width="15%"></td>
+              <td width="70%" align="center">'.$cek_data[0]->nama.'</td>
+              <td width="15%"></td>
+            </tr>         
+          </table>
+        ';
+        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->output();
+      }else{
+        redirect('/home');
+      }
+    }
+  
+	}
 	
 	function logout()
   {

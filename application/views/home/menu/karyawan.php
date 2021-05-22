@@ -243,7 +243,7 @@
                                
             block_ui()
           },
-          success:  function  (response) {
+          success:   function  (response) {
             $('#sini_form')[0].reset();
             $('#table_list_karyawan').dataTable().fnDestroy();
             datatables()
@@ -263,10 +263,8 @@
               timer : 3000
               // dangerMode: true,
             })
-            
 
-                
-            
+            qrcode_karyawan(nik_karyawan)
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) { 
             // console.log(errorThrown)
@@ -573,6 +571,18 @@
         });
 
       });
+    }
+
+    async function qrcode_karyawan(nik_karyawan){
+      let html = await  `<div class="row small-spacing">
+          <div class="col-lg-12 col-xs-12" style="overflow-x: auto; ">
+            <iframe src="${url}home/print_id_karyawan/${nik_karyawan}"  width="100%" height="450px"></iframe>
+          </div>
+        </div>`
+
+      await $("#sini_modalnya .modal-body").html(html)
+          
+      await $('#sini_modalnya').modal('show');
     }
   </script>
 
